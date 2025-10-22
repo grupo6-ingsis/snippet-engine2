@@ -8,6 +8,7 @@ plugins {
 	id 'jacoco'
 }
 
+
 group = 'org.gudelker'
 version = '0.0.1-SNAPSHOT'
 description = 'Demo project for Spring Boot'
@@ -25,7 +26,16 @@ configurations {
 }
 
 repositories {
-	mavenCentral()
+    mavenLocal()
+    mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/grupo6-ingsis/printscript2")
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+        }
+    }
 }
 
 dependencies {
@@ -34,6 +44,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
+    implementation("org.gudelker:parser:1.2.51")
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
