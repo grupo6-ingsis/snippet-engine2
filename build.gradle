@@ -8,7 +8,6 @@ plugins {
 	id 'jacoco'
 }
 
-
 group = 'org.gudelker'
 version = '0.0.1-SNAPSHOT'
 description = 'Demo project for Spring Boot'
@@ -37,15 +36,27 @@ repositories {
         }
     }
 }
-
+ext {
+    gudelkerVersion = '1.2.51' // Change here only
+}
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
-    implementation("org.gudelker:parser:1.2.51")
-	compileOnly 'org.projectlombok:lombok'
+    implementation "org.gudelker:ast:$gudelkerVersion"
+    implementation "org.gudelker:lexer:$gudelkerVersion"
+    implementation "org.gudelker:parser:$gudelkerVersion"
+    implementation "org.gudelker:interpreter:$gudelkerVersion"
+    implementation "org.gudelker:formatter:$gudelkerVersion"
+    implementation "org.gudelker:analyzer:$gudelkerVersion"
+    implementation "org.gudelker:token:$gudelkerVersion"
+    implementation "org.gudelker:utilities:$gudelkerVersion"
+    implementation "org.gudelker:cli:$gudelkerVersion"
+    implementation "org.gudelker:common:$gudelkerVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
