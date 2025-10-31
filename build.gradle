@@ -31,8 +31,8 @@ repositories {
         name = "GitHubPackages"
         url = uri("https://maven.pkg.github.com/grupo6-ingsis/printscript2")
         credentials {
-            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-            password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            username = project.findProperty("gpr.user") ?: project.findProperty("gpr.username") ?: System.getenv("GPR_USER") ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.key") ?: project.findProperty("gpr.password") ?: System.getenv("GPR_TOKEN") ?: System.getenv("TOKEN")
         }
     }
 }
