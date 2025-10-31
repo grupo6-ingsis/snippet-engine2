@@ -13,8 +13,7 @@ import org.gudelker.statements.interfaces.Statement
 import org.gudelker.utilities.Version
 import org.springframework.stereotype.Service
 import java.io.ByteArrayInputStream
-import java.util.*
-
+import java.util.Locale
 
 @Service
 class EngineService {
@@ -33,8 +32,11 @@ class EngineService {
         return InputStreamSourceReader(src, 8192)
     }
 
-    fun parseSnippet(lexer: StreamingLexer, parser: StreamingParser, sourceReader: InputStreamSourceReader): ResultType {
-
+    fun parseSnippet(
+        lexer: StreamingLexer,
+        parser: StreamingParser,
+        sourceReader: InputStreamSourceReader,
+    ): ResultType {
         lexer.initialize(sourceReader)
 
         val statements: MutableList<Statement?> = ArrayList<Statement?>()

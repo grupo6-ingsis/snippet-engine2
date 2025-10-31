@@ -8,13 +8,17 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/snippet")
-class EngineController (private val service: EngineService) {
-
+class EngineController(
+    private val service: EngineService,
+) {
     @PostMapping("/parse")
-    fun parseSnippet(snippetContent: String, version: Version): ResultType {
+    fun parseSnippet(
+        snippetContent: String,
+        version: Version,
+    ): ResultType {
         val parser = service.createParser(version)
         val lexer = service.createLexer(version)
         val srcReader = service.createStringInputSourceReader(snippetContent)
-        return service.parseSnippet(lexer,parser, srcReader)
+        return service.parseSnippet(lexer, parser, srcReader)
     }
 }
