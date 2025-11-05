@@ -54,11 +54,11 @@ class EngineService {
                 if (parseResult.message.lowercase(Locale.getDefault()).contains("need more tokens")) {
                     continue
                 }
-                break
+                return ResultType.FAILURE
             } else if (parseResult === StreamingParserResult.Finished) {
-                ResultType.SUCCESS
+                return ResultType.SUCCESS
             }
         }
-        return ResultType.FAILURE
+        return ResultType.SUCCESS
     }
 }
