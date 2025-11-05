@@ -35,9 +35,18 @@ repositories {
             password = project.findProperty("gpr.key") ?: project.findProperty("gpr.password") ?: System.getenv("GPR_TOKEN") ?: System.getenv("TOKEN")
         }
     }
+    maven {
+        name = "GitHubPackages-Redis"
+        url = uri("https://maven.pkg.github.com/austral-ingsis/class-redis-streams")
+        credentials {
+            username = project.findProperty("gpr.user") ?: project.findProperty("gpr.username") ?: System.getenv("GPR_USER") ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.key") ?: project.findProperty("gpr.password") ?: System.getenv("GPR_TOKEN") ?: System.getenv("TOKEN")
+        }
+    }
 }
 ext {
-    gudelkerVersion = '1.2.51' // Change here only
+    gudelkerVersion = '1.2.51'
+    redisStreamsVersion = '0.1.+'
 }
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -45,6 +54,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
+
+    // Redis dependencies
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation "org.austral.ingsis:redis-streams-mvc:${redisStreamsVersion}"
+
+    // PrintScript dependencies
     implementation "org.gudelker:ast:$gudelkerVersion"
     implementation "org.gudelker:lexer:$gudelkerVersion"
     implementation "org.gudelker:parser:$gudelkerVersion"
@@ -56,6 +71,7 @@ dependencies {
     implementation "org.gudelker:cli:$gudelkerVersion"
     implementation "org.gudelker:common:$gudelkerVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
     compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
