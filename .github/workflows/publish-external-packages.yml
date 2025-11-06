@@ -79,6 +79,9 @@ jobs:
           file: ./Dockerfile
           push: true
           platforms: linux/amd64
+          build-args: |
+            GPR_USER=${{ secrets.GPR_USER }}
+            GPR_TOKEN=${{ secrets.GPR_TOKEN }}
           tags: |
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ steps.short-sha.outputs.sha }}
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ env.REF_SLUG }}-latest
