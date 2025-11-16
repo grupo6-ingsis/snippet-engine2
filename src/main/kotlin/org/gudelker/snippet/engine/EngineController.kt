@@ -1,5 +1,6 @@
 package org.gudelker.snippet.engine
 
+import org.gudelker.snippet.engine.input.ParseSnippetRequest
 import org.gudelker.snippet.engine.utils.ResultType
 import org.gudelker.utilities.Version
 import org.springframework.web.bind.annotation.PostMapping
@@ -16,10 +17,10 @@ class EngineController(
     fun parseSnippet(
         @RequestBody input: ParseSnippetRequest,
     ): ResultType {
-        val version = Version.valueOf(request.version)
+        val version = Version.valueOf(input.version)
         val parser = service.createParser(version)
         val lexer = service.createLexer(version)
-        val srcReader = service.createStringInputSourceReader(request.snippetContent)
+        val srcReader = service.createStringInputSourceReader(input.snippetContent)
         return service.parseSnippet(lexer, parser, srcReader)
     }
 }
