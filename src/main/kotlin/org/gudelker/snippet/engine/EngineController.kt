@@ -1,6 +1,5 @@
 package org.gudelker.snippet.engine
 
-import org.gudelker.snippet.engine.dto.RequestParseDto
 import org.gudelker.snippet.engine.utils.ResultType
 import org.gudelker.utilities.Version
 import org.springframework.web.bind.annotation.PostMapping
@@ -15,7 +14,7 @@ class EngineController(
 ) {
     @PostMapping("/parse")
     fun parseSnippet(
-        @RequestBody request: RequestParseDto,
+        @RequestBody input: ParseSnippetRequest,
     ): ResultType {
         val version = Version.valueOf(request.version)
         val parser = service.createParser(version)
