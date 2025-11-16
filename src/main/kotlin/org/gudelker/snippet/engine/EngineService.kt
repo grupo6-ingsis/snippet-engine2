@@ -39,7 +39,7 @@ class EngineService {
     ): ResultType {
         lexer.initialize(sourceReader)
 
-        val statements: MutableList<Statement?> = ArrayList<Statement?>()
+        val statements: MutableList<Statement?> = ArrayList()
         while (lexer.hasMore() || parser.hasMore()) {
             if (lexer.hasMore()) {
                 val lexerResult = lexer.nextBatch(10)
