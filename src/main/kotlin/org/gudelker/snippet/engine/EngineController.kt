@@ -18,7 +18,11 @@ class EngineController(
         @RequestBody input: ParseSnippetRequest,
     ): ResultType {
         return try {
-            val version = Version.valueOf(input.version)
+            val version = when (input.version) {
+                "1.0" -> Version.V1
+                "2.0" -> Version.V2
+                else -> throw IllegalArgumentException("Unsupported version: ${input.version}")
+            }
             val parser = service.createParser(version)
             val lexer = service.createLexer(version)
             val srcReader = service.createStringInputSourceReader(input.snippetContent)
