@@ -17,10 +17,19 @@ class EngineController(
     fun parseSnippet(
         @RequestBody input: ParseSnippetRequest,
     ): ResultType {
-        val version = Version.valueOf(input.version)
-        val parser = service.createParser(version)
-        val lexer = service.createLexer(version)
-        val srcReader = service.createStringInputSourceReader(input.snippetContent)
-        return service.parseSnippet(lexer, parser, srcReader)
+        return try {
+            val version = Version.valueOf(input.version)
+            val parser = service.createParser(version)
+            val lexer = service.createLexer(version)
+            val srcReader = service.createStringInputSourceReader(input.snippetContent)
+            service.parseSnippet(lexer, parser, srcReader)
+        } catch (e: IllegalArgumentException) {
+            println("Invalid version: ${input.version}. Error: ${e.message}")
+            ResultType.FAILURE
+        } catch (e: Exception) {
+            println("Error parsing snippet: ${e.message}")
+            e.printStackTrace()
+            ResultType.FAILURE
+        }
     }
 }
