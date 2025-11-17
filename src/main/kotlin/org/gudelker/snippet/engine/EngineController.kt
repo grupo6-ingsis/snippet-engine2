@@ -16,13 +16,14 @@ class EngineController(
     @PostMapping("/parse")
     fun parseSnippet(
         @RequestBody input: ParseSnippetRequest,
-    ): ResultType {
-        return try {
-            val version = when (input.version) {
-                "1.0" -> Version.V1
-                "1.1" -> Version.V2
-                else -> throw IllegalArgumentException("Unsupported version: ${input.version}")
-            }
+    ): ResultType =
+        try {
+            val version =
+                when (input.version) {
+                    "1.0" -> Version.V1
+                    "1.1" -> Version.V2
+                    else -> throw IllegalArgumentException("Unsupported version: ${input.version}")
+                }
             val parser = createParser(version)
             val lexer = createLexer(version)
             val srcReader = createStringInputSourceReader(input.snippetContent)
@@ -35,5 +36,4 @@ class EngineController(
             e.printStackTrace()
             ResultType.FAILURE
         }
-    }
 }

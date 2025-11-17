@@ -12,11 +12,11 @@ class AssetApiClient(
     fun getAsset(
         container: String,
         key: String,
-    ): String {
-        return restClient.get()
+    ): String =
+        restClient
+            .get()
             .uri("$baseUrl/{container}/{key}", container, key)
             .retrieve()
             .body(String::class.java)
             ?: throw RuntimeException("Error fetching asset")
-    }
 }

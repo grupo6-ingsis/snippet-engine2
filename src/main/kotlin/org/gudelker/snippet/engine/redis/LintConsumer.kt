@@ -1,7 +1,8 @@
 package org.gudelker.snippet.engine.redis
 
 import jakarta.annotation.PostConstruct
-import org.gudelker.snippet.engine.utils.LintRequest
+import org.gudelker.snippet.engine.utils.dto.LintRequest
+import org.gudelker.snippet.engine.utils.dto.SnippetIdWithLintResultsDto
 import org.springframework.data.redis.connection.stream.Consumer
 import org.springframework.data.redis.connection.stream.ObjectRecord
 import org.springframework.data.redis.connection.stream.ReadOffset
@@ -15,9 +16,8 @@ import org.springframework.stereotype.Service
 class LintConsumer(
     private val lintEngine: LintEngineService,
     private val redisTemplate: RedisTemplate<String, Any>,
-    private val container: StreamMessageListenerContainer<String, ObjectRecord<String, LintRequest>>
+    private val container: StreamMessageListenerContainer<String, ObjectRecord<String, LintRequest>>,
 ) : StreamListener<String, ObjectRecord<String, LintRequest>> {
-
     private val streamKey = "lint-requests"
     private val group = "lint-engine-group"
     private val consumerName = "engine-1"
@@ -37,7 +37,7 @@ class LintConsumer(
         container.receive(
             Consumer.from(group, consumerName),
             StreamOffset.create(streamKey, ReadOffset.lastConsumed()),
-            this
+            this,
         )
 
         container.start()
@@ -45,11 +45,19 @@ class LintConsumer(
 
     override fun onMessage(record: ObjectRecord<String, LintRequest>) {
         val value = record.value
-
-        println("Recibí request de linteo: $value")
+        val snippetId = record.value.snippetId
 
         // Ejecutar tu lógica real
-        lintEngine.processLint(value)
+        val results = lintEngine.processLint(value)
+        val snippetIdWithResults =
+            SnippetIdWithLintResultsDto(
+                snippetId,
+                results,
+            )
+        // manda al service los results
+        redisTemplate
+            .opsForStream<String, Any>()
+            .add(ObjectRecord.create("lint-results", snippetIdWithResults))
 
         // ACK del mensaje
         redisTemplate

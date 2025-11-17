@@ -10,7 +10,6 @@ import org.gudelker.sourcereader.InputStreamSourceReader
 import org.gudelker.utilities.Version
 import java.io.ByteArrayInputStream
 
-
 fun createParser(version: Version): StreamingParser {
     val parserFactory = DefaultParserFactory.createParser(version)
     return StreamingParser(parserFactory)
@@ -26,15 +25,16 @@ fun createStringInputSourceReader(snippetContent: String): InputStreamSourceRead
     return InputStreamSourceReader(src, 8192)
 }
 
-fun createJsonRuleMap(userRules: List<RuleNameWithValue>, defaultRules: List<String>): Map<String, LinterConfig> {
-    return defaultRules.associateWith { rule ->
+fun createJsonRuleMap(
+    userRules: List<RuleNameWithValue>,
+    defaultRules: List<String>,
+): Map<String, LinterConfig> =
+    defaultRules.associateWith { rule ->
         val userRule = userRules.find { it.ruleName == rule }
         val isEnabled = userRule != null
         LinterConfig(
             identifierFormat = userRule?.value ?: "",
             restrictPrintlnToIdentifierOrLiteral = isEnabled,
-            restrictReadInputToIdentifierOrLiteral = isEnabled
+            restrictReadInputToIdentifierOrLiteral = isEnabled,
         )
     }
-}
-
