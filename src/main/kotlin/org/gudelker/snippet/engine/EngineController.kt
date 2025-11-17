@@ -20,12 +20,12 @@ class EngineController(
         return try {
             val version = when (input.version) {
                 "1.0" -> Version.V1
-                "2.0" -> Version.V2
+                "1.1" -> Version.V2
                 else -> throw IllegalArgumentException("Unsupported version: ${input.version}")
             }
-            val parser = service.createParser(version)
-            val lexer = service.createLexer(version)
-            val srcReader = service.createStringInputSourceReader(input.snippetContent)
+            val parser = createParser(version)
+            val lexer = createLexer(version)
+            val srcReader = createStringInputSourceReader(input.snippetContent)
             service.parseSnippet(lexer, parser, srcReader)
         } catch (e: IllegalArgumentException) {
             println("Invalid version: ${input.version}. Error: ${e.message}")
