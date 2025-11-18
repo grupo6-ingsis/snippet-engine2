@@ -44,11 +44,14 @@ class LintConsumer(
     }
 
     override fun onMessage(record: ObjectRecord<String, LintRequest>) {
+        println("Received lint request event: $record")
         val value = record.value
         val snippetId = record.value.snippetId
+        println("Processing lint for snippetId: $snippetId")
 
         // Ejecutar tu lógica real
         val results = lintEngine.processLint(value)
+        println("Lint results for snippetId $snippetId: $results")
         val snippetIdWithResults =
             SnippetIdWithLintResultsDto(
                 snippetId,
@@ -58,10 +61,12 @@ class LintConsumer(
         redisTemplate
             .opsForStream<String, Any>()
             .add(ObjectRecord.create("lint-results", snippetIdWithResults))
+        println("Published lint results for snippetId: $snippetId")
 
         // ACK del mensaje
         redisTemplate
             .opsForStream<String, Any>()
             .acknowledge(streamKey, group, record.id)
+        println("Acknowledged message for snippetId: $snippetId")
     }
 }

@@ -14,6 +14,7 @@ class LintEngineService(
     private val engineService: EngineService,
 ) {
     fun processLint(request: LintRequest): List<LintResultRequest> {
+        println("LintEngineService.processLint called for snippetId: ${request.snippetId}, version: ${request.snippetVersion}")
         val snippetContent =
             assetClient.getAsset(
                 container = "snippets",
@@ -22,6 +23,8 @@ class LintEngineService(
         val src = ByteArrayInputStream(snippetContent.toByteArray())
 
         val configRules = createJsonRuleMap(request.userRules, request.allRules)
-        return engineService.lintSnippet(src, version = request.snippetVersion, configRules)
+        val results = engineService.lintSnippet(src, version = request.snippetVersion, configRules)
+        println("LintEngineService.processLint results for snippetId: ${request.snippetId}: $results")
+        return results
     }
 }

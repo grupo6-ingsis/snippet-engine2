@@ -9,6 +9,6 @@ import org.springframework.test.context.ActiveProfiles
 class ApplicationTests {
     @Test
     fun contextLoads() {
-        println("Context Loads")
+        println("Context")
     }
 }
