@@ -31,8 +31,8 @@ class RedisStreamConfig(
     }
 
     @Bean
-    fun redisTemplate(factory: RedisConnectionFactory): RedisTemplate<String, Any> {
-        val template = RedisTemplate<String, Any>()
+    fun redisTemplate(factory: RedisConnectionFactory): RedisTemplate<String, LintRequest> {
+        val template = RedisTemplate<String, LintRequest>()
         template.connectionFactory = factory
         template.keySerializer = StringRedisSerializer()
         template.hashKeySerializer = StringRedisSerializer()

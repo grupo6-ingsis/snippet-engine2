@@ -2,7 +2,6 @@ package org.gudelker.snippet.engine.redis
 
 import jakarta.annotation.PostConstruct
 import org.gudelker.snippet.engine.utils.dto.LintRequest
-import org.gudelker.snippet.engine.utils.dto.SnippetIdWithLintResultsDto
 import org.springframework.context.annotation.Profile
 import org.springframework.data.redis.connection.stream.Consumer
 import org.springframework.data.redis.connection.stream.ObjectRecord
@@ -17,10 +16,9 @@ import org.springframework.stereotype.Service
 @Profile("!test")
 class LintConsumer(
     private val lintEngine: LintEngineService,
-    private val redisTemplate: RedisTemplate<String, Any>,
+    private val redisTemplate: RedisTemplate<String, LintRequest>,
     private val container: StreamMessageListenerContainer<String, ObjectRecord<String, LintRequest>>,
 ) : StreamListener<String, ObjectRecord<String, LintRequest>> {
-
     private val streamKey = "lint-requests"
     private val group = "lint-engine-group"
     private val consumerName = "engine-1"
@@ -38,7 +36,7 @@ class LintConsumer(
         // ----------------------------------------------------
         try {
             redisTemplate
-                .opsForStream<String, Any>()
+                .opsForStream<String, LintRequest>()
                 .createGroup(streamKey, group)
             println("👥 Grupo '$group' creado.")
         } catch (e: Exception) {
@@ -70,26 +68,5 @@ class LintConsumer(
         val results = lintEngine.processLint(request)
 
         println("✅ Lint results for snippetId $snippetId: $results")
-
-        // Crear mensaje con resultados
-        val snippetIdWithResults =
-            SnippetIdWithLintResultsDto(
-                snippetId,
-                results,
-            )
-
-        // Publicar al stream 'lint-results'
-        redisTemplate
-            .opsForStream<String, Any>()
-            .add(ObjectRecord.create("lint-results", snippetIdWithResults))
-
-        println("📤 Published lint results for snippetId: $snippetId")
-
-        // ACK
-        redisTemplate
-            .opsForStream<String, Any>()
-            .acknowledge(streamKey, group, record.id)
-
-        println("👍 Acknowledged message for snippetId: $snippetId")
     }
 }
