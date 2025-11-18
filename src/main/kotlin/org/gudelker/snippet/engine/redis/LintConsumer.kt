@@ -3,6 +3,7 @@ package org.gudelker.snippet.engine.redis
 import jakarta.annotation.PostConstruct
 import org.gudelker.snippet.engine.utils.dto.LintRequest
 import org.gudelker.snippet.engine.utils.dto.SnippetIdWithLintResultsDto
+import org.springframework.context.annotation.Profile
 import org.springframework.data.redis.connection.stream.Consumer
 import org.springframework.data.redis.connection.stream.ObjectRecord
 import org.springframework.data.redis.connection.stream.ReadOffset
@@ -13,6 +14,7 @@ import org.springframework.data.redis.stream.StreamMessageListenerContainer
 import org.springframework.stereotype.Service
 
 @Service
+@Profile("!test")
 class LintConsumer(
     private val lintEngine: LintEngineService,
     private val redisTemplate: RedisTemplate<String, Any>,

@@ -3,6 +3,7 @@ package org.gudelker.snippet.engine.redis
 import org.gudelker.snippet.engine.utils.dto.LintRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.connection.stream.ObjectRecord
 import org.springframework.data.redis.core.RedisTemplate
@@ -13,6 +14,7 @@ import java.time.Duration
 import kotlin.jvm.java
 
 @Configuration
+@Profile("!test")
 class RedisStreamConfig(
     private val factory: RedisConnectionFactory,
 ) {
