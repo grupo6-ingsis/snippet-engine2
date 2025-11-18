@@ -1,5 +1,7 @@
 package org.gudelker.snippet.engine.redis
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.gudelker.snippet.engine.utils.dto.LintRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -19,6 +21,9 @@ class RedisStreamConfig(
     private val factory: RedisConnectionFactory,
 ) {
     @Bean
+    fun objectMapper(): ObjectMapper = ObjectMapper().registerKotlinModule()
+
+    @Bean
     fun streamListenerContainer(): StreamMessageListenerContainer<String, ObjectRecord<String, LintRequest>> {
         val options =
             StreamMessageListenerContainer.StreamMessageListenerContainerOptions
@@ -31,13 +36,16 @@ class RedisStreamConfig(
     }
 
     @Bean
-    fun redisTemplate(factory: RedisConnectionFactory): RedisTemplate<String, LintRequest> {
+    fun redisTemplate(
+        factory: RedisConnectionFactory,
+        objectMapper: ObjectMapper,
+    ): RedisTemplate<String, LintRequest> {
         val template = RedisTemplate<String, LintRequest>()
         template.connectionFactory = factory
         template.keySerializer = StringRedisSerializer()
         template.hashKeySerializer = StringRedisSerializer()
-        template.valueSerializer = GenericJackson2JsonRedisSerializer()
-        template.hashValueSerializer = GenericJackson2JsonRedisSerializer()
+        template.valueSerializer = GenericJackson2JsonRedisSerializer(objectMapper)
+        template.hashValueSerializer = GenericJackson2JsonRedisSerializer(objectMapper)
         template.afterPropertiesSet()
         return template
     }
