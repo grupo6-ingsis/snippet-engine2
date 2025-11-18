@@ -1,7 +1,6 @@
 package org.gudelker.snippet.engine.redis
 
 import jakarta.annotation.PostConstruct
-import org.gudelker.snippet.engine.LintEngineService
 import org.gudelker.snippet.engine.utils.dto.LintRequest
 import org.gudelker.snippet.engine.utils.dto.SnippetIdWithLintResultsDto
 import org.springframework.data.redis.connection.stream.Consumer
