@@ -1,4 +1,4 @@
-package org.gudelker.snippet.engine.api
+package org.gudelker.snippet.engine.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
