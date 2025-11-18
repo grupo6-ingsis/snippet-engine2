@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.connection.stream.ObjectRecord
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
+import org.springframework.data.redis.serializer.StringRedisSerializer
 import org.springframework.data.redis.stream.StreamMessageListenerContainer
 import java.time.Duration
 import kotlin.jvm.java
@@ -27,15 +29,14 @@ class RedisStreamConfig(
     }
 
     @Bean
-    fun redisTemplate(): RedisTemplate<String, Any> {
+    fun redisTemplate(factory: RedisConnectionFactory): RedisTemplate<String, Any> {
         val template = RedisTemplate<String, Any>()
-        template.setConnectionFactory(factory)
-        template.keySerializer =
-            org.springframework.data.redis.serializer
-                .StringRedisSerializer()
-        template.valueSerializer =
-            org.springframework.data.redis.serializer
-                .GenericJackson2JsonRedisSerializer()
+        template.connectionFactory = factory
+        template.keySerializer = StringRedisSerializer()
+        template.hashKeySerializer = StringRedisSerializer()
+        template.valueSerializer = GenericJackson2JsonRedisSerializer()
+        template.hashValueSerializer = GenericJackson2JsonRedisSerializer()
+        template.afterPropertiesSet()
         return template
     }
 }
