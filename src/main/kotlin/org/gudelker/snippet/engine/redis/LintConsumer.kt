@@ -1,6 +1,7 @@
 package org.gudelker.snippet.engine.redis
 
 import jakarta.annotation.PostConstruct
+import org.gudelker.snippet.engine.LintEngineService
 import org.gudelker.snippet.engine.utils.dto.LintRequest
 import org.gudelker.snippet.engine.utils.dto.SnippetIdWithLintResultsDto
 import org.springframework.data.redis.connection.stream.Consumer
@@ -18,22 +19,34 @@ class LintConsumer(
     private val redisTemplate: RedisTemplate<String, Any>,
     private val container: StreamMessageListenerContainer<String, ObjectRecord<String, LintRequest>>,
 ) : StreamListener<String, ObjectRecord<String, LintRequest>> {
+
     private val streamKey = "lint-requests"
     private val group = "lint-engine-group"
     private val consumerName = "engine-1"
 
     @PostConstruct
     fun init() {
-        // Si el consumer group no existe, lo creamos
+        // ----------------------------------------------------
+        // 🔥 LIMPIAR EL STREAM PARA EVITAR MENSAJES VIEJOS
+        // ----------------------------------------------------
+        println("🔥 Borrando stream '$streamKey' al iniciar consumidor...")
+        redisTemplate.delete(streamKey)
+
+        // ----------------------------------------------------
+        // Crear group (solo si el stream existe)
+        // ----------------------------------------------------
         try {
             redisTemplate
                 .opsForStream<String, Any>()
                 .createGroup(streamKey, group)
+            println("👥 Grupo '$group' creado.")
         } catch (e: Exception) {
-            println("Consumer group ya existe, OK")
+            println("👥 Grupo '$group' ya existe, OK.")
         }
 
+        // ----------------------------------------------------
         // Suscribir este listener al stream
+        // ----------------------------------------------------
         container.receive(
             Consumer.from(group, consumerName),
             StreamOffset.create(streamKey, ReadOffset.lastConsumed()),
@@ -41,32 +54,41 @@ class LintConsumer(
         )
 
         container.start()
+        println("📡 Consumidor de '$streamKey' iniciado.")
     }
 
     override fun onMessage(record: ObjectRecord<String, LintRequest>) {
-        println("Received lint request event: $record")
-        val value = record.value
-        val snippetId = record.value.snippetId
-        println("Processing lint for snippetId: $snippetId")
+        println("📥 Received lint request event: $record")
 
-        // Ejecutar tu lógica real
-        val results = lintEngine.processLint(value)
-        println("Lint results for snippetId $snippetId: $results")
+        val request = record.value
+        val snippetId = request.snippetId
+
+        println("🔧 Processing lint for snippetId: $snippetId")
+
+        // Ejecutar lógica real
+        val results = lintEngine.processLint(request)
+
+        println("✅ Lint results for snippetId $snippetId: $results")
+
+        // Crear mensaje con resultados
         val snippetIdWithResults =
             SnippetIdWithLintResultsDto(
                 snippetId,
                 results,
             )
-        // manda al service los results
+
+        // Publicar al stream 'lint-results'
         redisTemplate
             .opsForStream<String, Any>()
             .add(ObjectRecord.create("lint-results", snippetIdWithResults))
-        println("Published lint results for snippetId: $snippetId")
 
-        // ACK del mensaje
+        println("📤 Published lint results for snippetId: $snippetId")
+
+        // ACK
         redisTemplate
             .opsForStream<String, Any>()
             .acknowledge(streamKey, group, record.id)
-        println("Acknowledged message for snippetId: $snippetId")
+
+        println("👍 Acknowledged message for snippetId: $snippetId")
     }
 }
