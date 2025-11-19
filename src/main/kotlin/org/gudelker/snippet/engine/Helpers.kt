@@ -5,6 +5,8 @@ import org.gudelker.lexer.StreamingLexer
 import org.gudelker.linter.LinterConfig
 import org.gudelker.parser.DefaultParserFactory
 import org.gudelker.parser.StreamingParser
+import org.gudelker.rules.FormatterRule
+import org.gudelker.snippet.engine.utils.FormatRuleNameWithValue
 import org.gudelker.snippet.engine.utils.RuleNameWithValue
 import org.gudelker.sourcereader.InputStreamSourceReader
 import org.gudelker.utilities.Version
@@ -37,4 +39,23 @@ fun createJsonRuleMap(
             restrictPrintlnToIdentifierOrLiteral = isEnabled,
             restrictReadInputToIdentifierOrLiteral = isEnabled,
         )
+    }
+
+fun createFormatJsonRuleMap(
+    userRules: List<FormatRuleNameWithValue>,
+    defaultRules: List<String>,
+): Map<String, FormatterRule> =
+    defaultRules.associateWith { rule ->
+        val userRule = userRules.find { it.ruleName == rule }
+        if (userRule != null) {
+            FormatterRule(
+                on = true,
+                quantity = userRule.value,
+            )
+        } else {
+            FormatterRule(
+                on = false,
+                quantity = 0,
+            )
+        }
     }
