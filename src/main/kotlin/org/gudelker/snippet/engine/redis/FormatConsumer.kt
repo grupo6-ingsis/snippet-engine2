@@ -21,7 +21,7 @@ class FormatConsumer(
     private val container: StreamMessageListenerContainer<String, MapRecord<String, String, String>>,
     private val objectMapper: ObjectMapper,
 ) : StreamListener<String, MapRecord<String, String, String>> {
-    private val streamKey = "format-requests"
+    private val streamKey = "formatting-requests"
     private val group = "format-engine-group"
     private val consumerName = "engine-2"
 
