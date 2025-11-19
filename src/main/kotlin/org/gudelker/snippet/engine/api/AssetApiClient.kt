@@ -1,5 +1,6 @@
 package org.gudelker.snippet.engine.api
 
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 
@@ -19,4 +20,18 @@ class AssetApiClient(
             .retrieve()
             .body(String::class.java)
             ?: throw RuntimeException("Error fetching asset")
+
+    fun updateAsset(
+        container: String,
+        key: String,
+        content: String,
+    ) {
+        restClient
+            .put()
+            .uri("$baseUrl/{container}/{key}", container, key)
+            .contentType(MediaType.TEXT_PLAIN)
+            .body(content)
+            .retrieve()
+            .toBodilessEntity()
+    }
 }
