@@ -16,7 +16,6 @@ class Auth0TokenService(
     @Value("\${auth0.client-secret}") private val clientSecret: String,
     @Value("\${auth0.audience}") private val audience: String,
     @Value("\${auth0.token-url}") private val tokenUrl: String,
-
 ) {
     fun getMachineToMachineToken(): Auth0TokenResponse {
         val requestBody =
