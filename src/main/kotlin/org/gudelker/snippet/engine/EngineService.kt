@@ -1,5 +1,6 @@
 package org.gudelker.snippet.engine
 
+import org.gudelker.formatter.DefaultFormatterFactory.createFormatter
 import org.gudelker.lexer.LexerFactory
 import org.gudelker.lexer.StreamingLexer
 import org.gudelker.lexer.StreamingLexerResult.TokenBatch
@@ -10,6 +11,7 @@ import org.gudelker.parser.DefaultParserFactory
 import org.gudelker.parser.StreamingParser
 import org.gudelker.parser.StreamingParserResult
 import org.gudelker.parser.StreamingParserResult.StatementParsed
+import org.gudelker.rules.FormatterRule
 import org.gudelker.snippet.engine.utils.ResultType
 import org.gudelker.snippet.engine.utils.VersionAdapter
 import org.gudelker.snippet.engine.utils.dto.LintResultRequest
@@ -106,4 +108,58 @@ class EngineService {
 
         return lintResultsRequest
     }
+
+    fun formatSnippet(
+        src: InputStream,
+        version: String,
+        config: Map<String, FormatterRule>,
+    ): String {
+        val v: Version = VersionAdapter.toVersion(version)
+        val defaultLexer = LexerFactory.createLexer(v)
+        val defaultParser: DefaultParser = DefaultParserFactory.createParser(v)
+        val streamingLexer = StreamingLexer(defaultLexer)
+        val streamingParser = StreamingParser(defaultParser)
+        val sourceReader = InputStreamSourceReader(src, 8192)
+        streamingLexer.initialize(sourceReader)
+
+        val statements: MutableList<Statement> = ArrayList()
+        while (streamingLexer.hasMore() || streamingParser.hasMore()) {
+            if (streamingLexer.hasMore()) {
+                val lexerResult = streamingLexer.nextBatch(10)
+                if (lexerResult is TokenBatch) {
+                    val tokenBatch = lexerResult
+                    streamingParser.addTokens(tokenBatch.tokens)
+                }
+            }
+            val parseResult = streamingParser.nextStatement()
+            if (parseResult is StatementParsed) {
+                val statementParsed = parseResult
+                statements.add(statementParsed.statement)
+            } else if (parseResult is StreamingParserResult.Error) {
+                val error = parseResult
+                if (error.message.lowercase(Locale.getDefault()).contains("need more tokens")) {
+                    continue
+                }
+                break
+            } else if (parseResult === StreamingParserResult.Finished) {
+                break
+            }
+        }
+
+        val formatter = createFormatter(v)
+        val sb = StringBuilder()
+
+        for ((index, statement) in statements.withIndex()) {
+            val formatted = formatter.format(statement, config)
+            if (index == statements.lastIndex) {
+                sb.append(removeTrailingNewline(formatted))
+            } else {
+                sb.append(formatted)
+            }
+        }
+
+        return sb.toString()
+    }
+
+    private fun removeTrailingNewline(str: String): String = if (str.endsWith("\n")) str.substring(0, str.length - 1) else str
 }
