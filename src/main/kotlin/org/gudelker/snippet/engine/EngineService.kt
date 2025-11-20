@@ -1,13 +1,20 @@
 package org.gudelker.snippet.engine
 
+import org.gudelker.StreamingPipeline
 import org.gudelker.formatter.DefaultFormatterFactory.createFormatter
+import org.gudelker.inputprovider.CLIInputProvider
+import org.gudelker.inputprovider.InputProvider
+import org.gudelker.interpreter.ChunkBaseFactory.createInterpreter
+import org.gudelker.interpreter.StreamingInterpreter
 import org.gudelker.lexer.LexerFactory
+import org.gudelker.lexer.LexerFactory.createLexer
 import org.gudelker.lexer.StreamingLexer
 import org.gudelker.lexer.StreamingLexerResult.TokenBatch
 import org.gudelker.linter.DefaultLinterFactory.createLinter
 import org.gudelker.linter.LinterConfig
 import org.gudelker.parser.DefaultParser
 import org.gudelker.parser.DefaultParserFactory
+import org.gudelker.parser.DefaultParserFactory.createParser
 import org.gudelker.parser.StreamingParser
 import org.gudelker.parser.StreamingParserResult
 import org.gudelker.parser.StreamingParserResult.StatementParsed
@@ -21,7 +28,7 @@ import org.gudelker.stmtposition.StatementStream
 import org.gudelker.utilities.Version
 import org.springframework.stereotype.Service
 import java.io.InputStream
-import java.util.Locale
+import java.util.*
 
 @Service
 class EngineService {
@@ -160,6 +167,44 @@ class EngineService {
 
         return sb.toString()
     }
+    fun interpretSnippet(snippetContent: String, version: Version): ArrayList<String>  {
+        val inputStream = snippetContent.byteInputStream()
+        val results = interpret(inputStream, version, CLIInputProvider())
+        return ArrayList(results)
+    }
+
+
+        private fun interpret(
+            src: InputStream,
+            version: Version,
+            provider: InputProvider
+        ): MutableList<String?> {
+            val lexer = createLexer(version)
+            val streamingLexer = StreamingLexer(lexer)
+            val parser = createParser(version)
+            val streamingParser = StreamingParser(parser)
+            val interpreter = createInterpreter(version, provider)
+            val streamingInterpreter = StreamingInterpreter(interpreter.getEvaluators())
+            val pipeline = StreamingPipeline(streamingLexer, streamingParser, streamingInterpreter)
+            val processedResults: MutableList<String?> = ArrayList<String?>()
+            val reader = InputStreamSourceReader(src, 8192)
+            try {
+                pipeline.initialize(reader)
+                val success = pipeline.processAll { result: Any? ->
+                    if (!(result is Unit || result == null)) {
+                        processedResults.add(result.toString())
+                    }
+                    true
+                }
+                if (!success) {
+                    throw RuntimeException("Interpreter failed: ${pipeline.getLastErrorMessage()}")
+                } else {
+                    return processedResults
+                }
+            } catch (e: OutOfMemoryError) {
+                throw OutOfMemoryError("Memory limit exceeded during interpretation.")
+            }
+        }
 
     private fun removeTrailingNewline(str: String): String = if (str.endsWith("\n")) str.substring(0, str.length - 1) else str
 }

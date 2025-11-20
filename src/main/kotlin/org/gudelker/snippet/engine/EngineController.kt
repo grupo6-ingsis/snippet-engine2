@@ -2,6 +2,8 @@ package org.gudelker.snippet.engine
 
 import org.gudelker.snippet.engine.input.ParseSnippetRequest
 import org.gudelker.snippet.engine.utils.ResultType
+import org.gudelker.snippet.engine.utils.dto.InterpretSnippetRequest
+import org.gudelker.snippet.engine.utils.dto.InterpretSnippetResponse
 import org.gudelker.utilities.Version
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -36,4 +38,29 @@ class EngineController(
             e.printStackTrace()
             ResultType.FAILURE
         }
+
+    @PostMapping("/interpret")
+    fun interpretSnippet(
+        @RequestBody input: InterpretSnippetRequest,
+    ): InterpretSnippetResponse {
+        try {
+            val version =
+            when (input.version) {
+                "1.0" -> Version.V1
+                "1.1" -> Version.V2
+                else -> throw IllegalArgumentException("Unsupported version: ${input.version}")
+            }
+            val results = service.interpretSnippet(input.snippetContent, version)
+            return InterpretSnippetResponse(
+                results = results,
+                resultType = ResultType.SUCCESS,
+            )
+        } catch (e: Exception) {
+            return InterpretSnippetResponse(
+                results = arrayListOf(),
+                resultType = ResultType.FAILURE,
+            )
+        }
+    }
+
 }
