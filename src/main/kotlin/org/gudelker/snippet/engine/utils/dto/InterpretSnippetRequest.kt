@@ -1,6 +1,6 @@
 package org.gudelker.snippet.engine.utils.dto
 
-class InterpretSnippetRequest (
+class InterpretSnippetRequest(
     val snippetContent: String,
-    val version: String
+    val version: String,
 )
