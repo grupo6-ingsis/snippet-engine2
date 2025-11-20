@@ -50,7 +50,7 @@ class EngineController(
                     "1.1" -> Version.V2
                     else -> throw IllegalArgumentException("Unsupported version: ${input.version}")
                 }
-            val results = service.interpretSnippet(input.snippetContent, version)
+            val results = service.interpretSnippet(input.snippetContent, version, input.inputs)
             return InterpretSnippetResponse(
                 results = results,
                 resultType = ResultType.SUCCESS,

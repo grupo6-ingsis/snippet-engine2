@@ -2,8 +2,8 @@ package org.gudelker.snippet.engine
 
 import org.gudelker.StreamingPipeline
 import org.gudelker.formatter.DefaultFormatterFactory.createFormatter
-import org.gudelker.inputprovider.CLIInputProvider
 import org.gudelker.inputprovider.InputProvider
+import org.gudelker.inputprovider.TestInputProvider
 import org.gudelker.interpreter.ChunkBaseFactory.createInterpreter
 import org.gudelker.interpreter.StreamingInterpreter
 import org.gudelker.lexer.LexerFactory
@@ -28,8 +28,8 @@ import org.gudelker.stmtposition.StatementStream
 import org.gudelker.utilities.Version
 import org.springframework.stereotype.Service
 import java.io.InputStream
-import java.util.Locale
 import java.util.ArrayList
+import java.util.Locale
 
 @Service
 class EngineService {
@@ -172,9 +172,10 @@ class EngineService {
     fun interpretSnippet(
         snippetContent: String,
         version: Version,
+        inputs: MutableList<String>,
     ): ArrayList<String> {
         val inputStream = snippetContent.byteInputStream()
-        val results = interpret(inputStream, version, CLIInputProvider())
+        val results = interpret(inputStream, version, TestInputProvider(inputs))
         return ArrayList(results)
     }
 
