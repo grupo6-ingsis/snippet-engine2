@@ -79,6 +79,7 @@ dependencies {
 	testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testImplementation 'com.h2database:h2'
+	testImplementation 'io.mockk:mockk:1.13.10'
 
 }
 
@@ -118,10 +119,25 @@ tasks.withType(JacocoReport) {
 	afterEvaluate {
 		classDirectories.setFrom(files(classDirectories.files.collect {
 			fileTree(dir: it, exclude: [
-					'**/model/**',
-					'**/config/**',
-					'**/*Main*.*',
-					'**/*Main$*.*',
+				'**/model/**',
+				'**/config/**',
+				'**/controller/**',
+				'**/controllers/**',
+				'**/repository/**',
+				'**/repositories/**',
+				'**/*Config.*',
+				'**/*Controller.*',
+				'**/*Repository.*',
+				'**/*Application.*',
+				'**/*ApiClient.*',
+				'**/*Main*.*',
+				'**/*Main$*.*',
+				'**/*Seeder.*',
+                '**/redis/**',
+                '**/api/**',
+                '**/input/**',
+                '**/Application.kt',
+                '**/EngineController.*'
 			])
 		}))
 	}
@@ -131,18 +147,35 @@ tasks.withType(JacocoCoverageVerification) {
 	violationRules {
 		rule {
 			limit {
-				minimum = 0.01
+				minimum = 0.9
 			}
 		}
-		rule {
-			element = 'CLASS'
-			excludes = ['**/model/**', '**/config/**', '**/*Main*']
-			limit {
-				minimum = 0.0
-			}
-		}
+	}
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+				'**/model/**',
+				'**/config/**',
+				'**/controller/**',
+				'**/controllers/**',
+				'**/repository/**',
+				'**/repositories/**',
+				'**/*Config.*',
+				'**/*Controller.*',
+				'**/*Repository.*',
+				'**/*Application.*',
+				'**/*ApiClient.*',
+				'**/*Main*.*',
+				'**/*Main$*.*',
+				'**/*Seeder.*',
+                '**/redis/**',
+                '**/api/**',
+                '**/input/**',
+                '**/Application.kt',
+                '**/EngineController.*'
+			])
+		}))
 	}
 }
 
 check.dependsOn jacocoTestCoverageVerification
-
