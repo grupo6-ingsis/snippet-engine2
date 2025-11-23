@@ -24,6 +24,7 @@ jobs:
       AUTH0_TOKEN_URL: ${{ secrets.AUTH0_TOKEN_URL }}
       GPR_USER: ${{ secrets.GPR_USER }}
       GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
+      NEW_RELIC_LICENSE_KEY: ${{ secrets.NEW_RELIC_LICENSE_KEY }}
 
 
     steps:
