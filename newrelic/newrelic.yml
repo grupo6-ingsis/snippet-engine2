@@ -136,7 +136,7 @@ common: &default_settings
       context_data:
 
         # When true, application logs will contain context data.
-        enabled: false
+        enabled: true
 
         # A comma separated list of attribute keys whose values should be sent to New Relic.
         #include:
@@ -151,10 +151,10 @@ common: &default_settings
       # When true, application log metrics will be reported. The default is true.
       enabled: true
 
-    # The agent will add linking metadata to each log line in your application log files.
-    # This feature should only be used if you want to use a third party log forwarder, instead
-    # of the agent's built-in forwarding feature, to send your application log events to New Relic.
-    #local_decorating:
+      # The agent will add linking metadata to each log line in your application log files.
+      # This feature should only be used if you want to use a third party log forwarder, instead
+      # of the agent's built-in forwarding feature, to send your application log events to New Relic.
+      #local_decorating:
 
       # When true, the agent will decorate your application log files with linking metadata. The default is false.
       #enabled: false
@@ -191,11 +191,11 @@ common: &default_settings
     # When true, attributes will be sent to New Relic. The default is true.
     enabled: true
 
-    #A comma separated list of attribute keys whose values should 
+    #A comma separated list of attribute keys whose values should
     # be sent to New Relic.
     #include:
 
-    # A comma separated list of attribute keys whose values should 
+    # A comma separated list of attribute keys whose values should
     # not be sent to New Relic.
     #exclude:
 
@@ -255,7 +255,7 @@ common: &default_settings
     # Default is true.
     explain_enabled: true
 
-    # Threshold for query execution time below which query plans will 
+    # Threshold for query execution time below which query plans will
     # not be captured. Relevant only when `explain_enabled` is true.
     # Default is 0.5 seconds.
     explain_threshold: 0.5
@@ -289,7 +289,7 @@ common: &default_settings
     ignore_status_codes: 404
 
   # Transaction events are used for histograms and percentiles. Non-aggregated data is collected
-  # for each web transaction and sent to the server on harvest. 
+  # for each web transaction and sent to the server on harvest.
   transaction_events:
 
     # Set to false to disable transaction events.
@@ -371,7 +371,7 @@ common: &default_settings
   # New Relic Real User Monitoring (RUM) gives you insight into the performance real users are
   # experiencing with your website. This is accomplished by measuring the time it takes for
   # your users' browsers to download and render your web pages by injecting a small amount
-  # of JavaScript code into the header and footer of each page. 
+  # of JavaScript code into the header and footer of each page.
   browser_monitoring:
 
     # By default the agent automatically inserts API calls in compiled JSPs to
@@ -399,20 +399,20 @@ common: &default_settings
   # By default, the standard and extended JVM props (those beginning with -X*) are sent unobfuscated.
   # Available since agent 8.16.0.
   obfuscate_jvm_props:
-    #To disable this feature, and send all JVM props unobfuscated, set enabled to false. The default is true.
-    #enabled: true
+  #To disable this feature, and send all JVM props unobfuscated, set enabled to false. The default is true.
+  #enabled: true
 
-    # A comma separated list of JVM property names whose values should be sent to New Relic unobfuscated.
-    #allow:
+  # A comma separated list of JVM property names whose values should be sent to New Relic unobfuscated.
+  #allow:
 
-    # A comma separated list of JVM property names whose values should be sent to New Relic obfuscated.
-    #block:
+  # A comma separated list of JVM property names whose values should be sent to New Relic obfuscated.
+  #block:
 
   # Class transformer can be used to disable all agent instrumentation or specific instrumentation modules.
   # All instrumentation modules can be found here: https://github.com/newrelic/newrelic-java-agent/tree/main/instrumentation
   class_transformer:
 
-    # This instrumentation reports the name of the user principal returned from 
+    # This instrumentation reports the name of the user principal returned from
     # HttpServletRequest.getUserPrincipal() when servlets and filters are invoked.
     com.newrelic.instrumentation.servlet-user:
       enabled: false
@@ -497,8 +497,8 @@ common: &default_settings
   # Names and values may not contain colons (:) or semicolons (;).
   labels:
 
-    # An example label
-    #label_name: label_value
+  # An example label
+  #label_name: label_value
 
   # New Relic Security vulnerability detection.
   security:
@@ -519,8 +519,8 @@ common: &default_settings
     agent:
       enabled: false
 
-    # This configuration allows users to specify a unique test identifier when running IAST Scan with CI/CD
-    # iast_test_identifier: 'run-id'
+      # This configuration allows users to specify a unique test identifier when running IAST Scan with CI/CD
+      # iast_test_identifier: 'run-id'
 
       # Security controllers
     scan_controllers:
@@ -614,15 +614,15 @@ common: &default_settings
 
 development:
   <<: *default_settings
-  app_name: My Application (Development)
+  app_name: Snippet Engine (Development)
 
 test:
   <<: *default_settings
-  app_name: My Application (Test)
+  app_name: Snippet Engine (Test)
 
 production:
   <<: *default_settings
 
 staging:
   <<: *default_settings
-  app_name: My Application (Staging)
+  app_name: Snippet Engine (Staging)
