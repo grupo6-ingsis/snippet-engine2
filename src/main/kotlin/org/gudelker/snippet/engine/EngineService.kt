@@ -159,11 +159,7 @@ class EngineService {
 
         for ((index, statement) in statements.withIndex()) {
             val formatted = formatter.format(statement, config)
-            if (index == statements.lastIndex) {
-                sb.append(removeTrailingNewline(formatted))
-            } else {
-                sb.append(formatted)
-            }
+            sb.append(formatted)
         }
 
         return sb.toString()
@@ -211,6 +207,4 @@ class EngineService {
             throw OutOfMemoryError("Memory limit exceeded during interpretation.")
         }
     }
-
-    private fun removeTrailingNewline(str: String): String = if (str.endsWith("\n")) str.substring(0, str.length - 1) else str
 }
