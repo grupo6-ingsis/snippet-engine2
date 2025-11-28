@@ -142,25 +142,6 @@ class EngineServiceTests {
     }
 
     @Nested
-    inner class RemoveTrailingNewlineTests {
-        @Test
-        fun `removeTrailingNewline removes newline at end`() {
-            val method = EngineService::class.java.getDeclaredMethod("removeTrailingNewline", String::class.java)
-            method.isAccessible = true
-            val result = method.invoke(engineService, "hello\n")
-            assertEquals("hello", result)
-        }
-
-        @Test
-        fun `removeTrailingNewline leaves string without newline unchanged`() {
-            val method = EngineService::class.java.getDeclaredMethod("removeTrailingNewline", String::class.java)
-            method.isAccessible = true
-            val result = method.invoke(engineService, "hello")
-            assertEquals("hello", result)
-        }
-    }
-
-    @Nested
     inner class LintSnippetMappingTests {
         @Test
         fun `lintSnippet maps violations to LintResultRequest correctly`() {
